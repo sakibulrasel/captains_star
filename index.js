@@ -37,6 +37,7 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 bot.onText(/\/start(.*)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
+  const referralCode = match[1].trim();
   try {
     // Check if user exists
     let user = await User.findOne({ telegramId: userId });
