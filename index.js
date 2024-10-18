@@ -63,7 +63,7 @@ bot.onText(/\/dashboard/, (msg) => {
     bot.sendMessage(chatId, 'Open Dashboard:', {
       reply_markup: {
         inline_keyboard: [
-          [{ text: 'Open Dashboard', web_app: { url: 'https://localhost:3000/' } }]
+          [{ text: 'Open Dashboard', web_app: { url: 'https://captains.netlify.app/' } }]
         ]
       }
     });
