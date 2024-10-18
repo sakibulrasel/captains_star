@@ -6,6 +6,7 @@ const cors = require('cors')
 let bodyParser = require("body-parser");
 const TelegramBot = require('node-telegram-bot-api');
 const User = require('./src/model/users');
+// var userRouter = require('./src/routes/user_route')
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -28,7 +29,8 @@ app.use(function (req, res, next) {
     'Origin, X-Requested-With, Content-Type, Accept'
   )
   next()
-})
+});
+// app.use('/api/users', userRouter);
 
 // Initialize Telegram Bot
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
@@ -37,6 +39,9 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 bot.onText(/\/start(.*)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
+  const firstName = msg.from.first_name;
+  const lastName = msg.from.last_name;
+  const userName = msg.from.username;
   const referralCode = match[1].trim();
   try {
     // Check if user exists
@@ -45,14 +50,20 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
     if (!user) {
       // Create a new user with a unique referral code
       const newReferralCode = `ref${userId}`;
+      const refferalUrl = `https://t.me/captains_star_dev_bot?start=${userId}`;
+    
       user = new User({
         telegramId: userId,
         referralCode: newReferralCode,
+        firstName:firstName,
+        lastName:lastName,
+        userName:userName,
+        referralUrl:refferalUrl
       });
 
       // Check if user was referred
       if (referralCode) {
-        const referrer = await User.findOne({ referralCode });
+        const referrer = await User.findOne({ telegramId:referralCode });
         if (referrer) {
           referrer.balance += 10; // Referral bonus
           referrer.referralCount += 1;
@@ -146,6 +157,16 @@ app.get('/api/profile/:id', async (req, res) => {
     console.log(req.params.id)
     const users = await User.findOne({telegramId:req.params.id});
     res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching users' });
+  }
+});
+
+// API to get all referrals
+app.get('/api/users/referrals/:id', async (req, res) => {
+  try {
+    let user = await User.find({ referralCode: 'ref'+req.params.id });
+    res.status(200).json({ users: user });
   } catch (error) {
     res.status(500).json({ error: 'Error fetching users' });
   }
