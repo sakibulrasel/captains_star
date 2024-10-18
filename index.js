@@ -37,8 +37,6 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 bot.onText(/\/start(.*)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
-  const referralCode = match[1].trim();
-
   try {
     // Check if user exists
     let user = await User.findOne({ telegramId: userId });
@@ -68,7 +66,7 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
     bot.sendMessage(chatId, 'Open Dashboard:', {
       reply_markup: {
         inline_keyboard: [
-          [{ text: 'Open Dashboard', web_app: { url: 'https://captains.netlify.app?id='+userId } }]
+          [{ text: 'Open Dashboard', web_app: { url: 'https://healthylivingshub.com?id='+userId } }]
         ]
       }
     });
@@ -84,7 +82,7 @@ bot.onText(/\/dashboard/, (msg) => {
     bot.sendMessage(chatId, 'Open Dashboard:', {
       reply_markup: {
         inline_keyboard: [
-          [{ text: 'Open Dashboard', web_app: { url: 'https://captains.netlify.app?telegram_id='+chatId } }]
+          [{ text: 'Open Dashboard', web_app: { url: 'https://healthylivingshub.com?id='+chatId } }]
         ]
       }
     });
