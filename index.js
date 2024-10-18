@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+let bodyParser = require("body-parser");
 const TelegramBot = require('node-telegram-bot-api');
 const User = require('./src/model/users');
 
@@ -13,6 +14,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Initialize Express server
 const app = express();
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Initialize Telegram Bot
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
@@ -63,7 +66,7 @@ bot.onText(/\/dashboard/, (msg) => {
     bot.sendMessage(chatId, 'Open Dashboard:', {
       reply_markup: {
         inline_keyboard: [
-          [{ text: 'Open Dashboard', web_app: { url: 'https://captains.netlify.app/' } }]
+          [{ text: 'Open Dashboard', web_app: { url: 'https://captains.netlify.app?telegram_id='+chatId } }]
         ]
       }
     });
@@ -114,6 +117,17 @@ bot.onText(/\/balance/, async (msg) => {
 app.get('/api/users', async (req, res) => {
   try {
     const users = await User.find({});
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching users' });
+  }
+});
+
+// API to get all users
+app.get('/api/profile/:id', async (req, res) => {
+  try {
+    console.log(req.params.id)
+    const users = await User.findOne({telegramId:req.params.id});
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching users' });
