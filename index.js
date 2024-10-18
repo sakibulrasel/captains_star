@@ -50,10 +50,15 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
       }
 
       await user.save();
-      bot.sendMessage(chatId, `Welcome! Your referral code is: ${newReferralCode}`);
-    } else {
-      bot.sendMessage(chatId, 'You are already registered!');
+     
     }
+    bot.sendMessage(chatId, 'Open Dashboard:', {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: 'Open Dashboard', web_app: { url: 'https://captains.netlify.app?id='+userId } }]
+        ]
+      }
+    });
   } catch (error) {
     console.log('Error on /start:', error);
     bot.sendMessage(chatId, 'Error during registration.');
