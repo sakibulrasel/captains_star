@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors')
 let bodyParser = require("body-parser");
 const TelegramBot = require('node-telegram-bot-api');
 const User = require('./src/model/users');
@@ -14,8 +15,20 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Initialize Express server
 const app = express();
 app.use(express.json());
+app.use(cors())
+app.options('*', cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
+})
 
 // Initialize Telegram Bot
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
