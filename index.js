@@ -58,7 +58,7 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
 });
 
 bot.onText(/\/dashboard/, (msg) => {
-    console.log(msg)
+    // console.log(msg)
     const chatId = msg.chat.id;
     bot.sendMessage(chatId, 'Open Dashboard:', {
       reply_markup: {
